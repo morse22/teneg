@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="kr.co.teneg.member.dao.MemberDAO">
+	<sql id="selectId">
+		select id, name, password, regDate, phone, addr, email, memberGrade, saveFileName
+				, egg, memberScore, birth, sex, introduce, phoneAlarm, expert
+		from t_member
+	</sql>
+
+<!-- 	회원가입 -->
+	<insert id="signUp" parameterType="memberVO">
+		INSERT INTO t_member(id, name, password, phone, addr, email, birth, sex, phoneAlarm,saveFileName)
+		VALUES(#{id}, #{name}, #{password}, #{phone}, #{addr}, #{email}, #{birth}, #{sex}, #{phoneAlarm},#{saveFileName})
+	</insert>
+	
+	
+<!-- 	로그인 -->
+	<select id="login" parameterType="memberVO" resultType="memberVO">
+		<include refid="selectId" />
+		where id = #{id} and password = #{password}
+	</select>
+	
+<!-- 	마이페이지 -->
+	<select id="myPage" parameterType="memberVO" resultType="memberVO" >
+		<include refid="selectId" />
+		where id = #{id}
+	</select>
+	
+<!-- 	마이페이지 정보 수정 -->
+	<update id="myPageUpdate" parameterType="memberVO" >
+		update t_member
+		set name=#{name}, password=#{password}, phone=#{phone}, addr=#{addr}, email=#{email}, sex=#{sex}, phoneAlarm=#{phoneAlarm}
+		where id = #{id}
+	</update>
+	
+<!-- 	회원의 상세정보 보기 -->
+	<select id="memberDetail" parameterType="memberVO" resultType="memberVO">
+		<include refid="selectId" />
+		where id = #{id}
+	</select>
+	
+<!-- 	관리자의 회원 삭제, 회원의 탈퇴 -->
+	<delete id="memberDelete" parameterType="memberVO" > 
+		delete from t_member
+		where id = #{id}
+	</delete>
+	
+	<select id="checkId" parameterType="String" resultType="String" >
+		select id
+		from t_member
+		where id = #{id}
+	</select>
+	
+	<select id="checkPhone" parameterType="String" resultType="String" >
+		select phone
+		from t_member
+		where phone=#{phone}
+	</select>
+	
+	<select id="checkEmail" parameterType="String" resultType="String" >
+		select email
+		from t_member
+		where email=#{email}
+	</select>
+	
+	<select id="findId" parameterType="memberVO" resultType="String">
+		select id from t_member
+		where name=#{name} and email=#{email}
+	</select>
+	
+	<select id="findPw" parameterType="memberVO" resultType="String">
+		select id from t_member
+		where id=#{id} and phone=#{phone}
+	</select>
+	
+	<select id="loginCheck" parameterType="memberVO" resultType="String">
+		select id from t_member
+		where id=#{id} and password=#{password}
+	</select>
+	
+	<update id="changePw" parameterType="memberVO">
+		update t_member set password=#{password} where id=#{id}
+	</update>
+	
+<!-- 	전체 회원수 카운트 -->
+	<select id="selectTotalCount" resultType="int">
+		select count(*) 
+		from t_member 
+	</select>
+	
+<!-- 	오늘 가입한 회원 -->
+	<select id="newMemberCount" resultType="int">
+		select count(*) 
+		from t_member
+		where to_char(sysdate)=to_char(regDate)
+	</select>
+	
+<!-- 	검색 -->
+	<select id="selectSearchList" resultType="MemberVO" parameterType="MemberPageVO">
+		select * 
+		from (  select rownum as rnum, m.*
+		        from t_member m
+		        where <choose>
+			       		  <when test="searchType == 'id'"> id like #{searchText} </when>
+			       		  <when test="searchType == 'egg'"> egg = #{searchText} </when>
+			       		  <when test="searchType == 'expert'"> expert like #{searchText} </when>
+			       		  <when test="searchType == 'name'"> name like #{searchText} </when>
+			       	  </choose>
+			       	  <choose>
+			       		  <when test="period == 'all'"></when>
+			       		  <when test="period == 'day'"> <![CDATA[ and to_char(regDate)=to_char(sysdate) ]]> </when>
+			       		  <when test="period == 'week'"> <![CDATA[ and regDate > sysdate-7 ]]> </when>
+			       		  <otherwise> <![CDATA[ and regDate > sysdate-30 ]]> </otherwise>
+			       	  </choose>
+		        order by <choose>
+				       		 <when test="sort == 'egg'"> egg desc </when>
+				       		 <when test="sort == 'regDate'"> regDate desc </when>
+				       		 <when test="sort == 'birth'"> birth desc </when>
+				       	 </choose>
+		)
+		where rnum between #{start} and #{end}     
+	</select>
+	
+<!-- 	선택된 회원 삭제 -->
+	<delete id="deleteList" parameterType="java.util.List">
+		delete from t_member 
+		where id in <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+	</delete>
+	
+	
+	
+	<select id="selectInfo" resultType="MyInfoVO" parameterType="String">
+		    select a.id, a.name, a.password, to_char(a.regDate, 'yyyy/mm/dd') as regDate, 
+    a.phone, a.addr, a.email, a.memberGrade, a.egg, a.memberScore, a.birth, a.sex, a.introduce,
+    a.phoneAlarm, a.saveFileName, b.id as expertId, b.field as expertField, b.content as expertContent,
+    b.regdate as expertRegdate,  b.titleImage, b.mainImage, b.approval from t_member a
+		 left outer join t_expert b
+     on a.id=b.id
+     where a.id=#{id}
+     order by b.id
+	</select>
+	
+	<select id="getEggById" parameterType="String" resultType="int">
+		select egg from t_member where id=#{id}
+	</select>
+	
+	<update id="subStractEgg" parameterType="RequestVO">
+		update t_member set egg=egg-#{price} where id=#{id}
+	</update>
+	
+	<update id="addEgg" parameterType="hashmap">
+		update t_member set egg=egg+#{price} where id=#{id}
+	</update>
+	
+</mapper>
+
+
+
+
+

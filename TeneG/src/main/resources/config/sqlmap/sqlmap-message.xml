@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.teneg.Message">
+	<insert id="insert">
+		insert into t_message(no, title, content, sender, recipient, mgLevel)
+		<choose>	
+		<when test="recipient != 'allmsg' ">
+		values(seq_t_message_no.nextval,#{title},#{content},#{sender},#{recipient},0)
+		</when>
+		<when test="recipient == 'allmsg' ">
+		 select seq_t_message_no.nextval,#{title},#{content},#{sender}, id from t_member,0
+		</when>
+		</choose>
+	</insert>
+	
+		<insert id="insert_Level">
+		insert into t_message(no, title, content, sender, recipient, mgLevel)
+		<choose>	
+		<when test="recipient != 'allmsg' ">
+		values(seq_t_message_no.nextval,#{title},#{content},#{sender},#{recipient}, 1)
+		</when>
+		<when test="recipient == 'allmsg' ">
+		 select seq_t_message_no.nextval,#{title},#{content},#{sender}, id from t_member, 1
+		</when>
+		</choose>
+	</insert>
+
+	<select id="list" parameterType="MessageVO" resultType="MessageVO">
+	select* from(
+	select * from(
+	select rownum as rnum, m.* from (
+	select no, sender, recipient, to_char(regDate, 'yyyy-mm-dd hh24:mi')as regDate,title, content, readCheck, mgLevel
+	from t_message m
+	where (recipient=#{userid} and mgLevel=0) or ( sender=#{userid} and mgLevel=1 )
+	order by no desc)m 
+	) 							
+  		<choose>
+			<when test="search_option != 'all'">						
+     		where	${search_option} like '%'||#{search_keyword}||'%' 
+     			or  ${search_option} like '%'||#{search_keyword2}||'%' 
+     	  		or  ${search_option} like '%'||#{search_keyword3}||'%' 
+     		</when>
+     		<when test="search_option == 'all'">
+       	  		where title like '%'||#{search_keyword}||'%' 
+     			or title like '%'||#{search_keyword2}||'%' 
+     			or title like '%'||#{search_keyword3}||'%' 
+     	 		or  content like '%'||#{search_keyword}||'%' 
+     	 		or  content like '%'||#{search_keyword2}||'%' 
+     	 		or  content like '%'||#{search_keyword3}||'%' 
+     	 		or  recipient like '%'||#{search_keyword}||'%' 
+     	 		or  recipient like '%'||#{search_keyword2}||'%' 
+     	 		or  recipient like '%'||#{search_keyword3}||'%'
+     	 		or  sender like '%'||#{search_keyword}||'%' 
+     	 		or  sender like '%'||#{search_keyword2}||'%' 
+     	 		or  sender like '%'||#{search_keyword3}||'%' 
+     	 		or  no like '%'||#{search_keyword}||'%' 
+     	 		or  no like '%'||#{search_keyword2}||'%' 
+     	 		or  no like '%'||#{search_keyword3}||'%' 
+     		</when>
+		</choose>	
+		)	where rnum between #{start} and #{end}
+	</select>	
+	
+	<select id="ListCount"  resultType="int">
+			select count(*) from (
+			select * from t_message where  recipient=#{userid} or sender=#{userid} )
+	  <if test="search_option != 'all' ">
+      where ${search_option} like '%'||#{search_keyword}||'%'
+     </if>
+     	<if test="search_option == 'all' ">
+     	where title like '%'||#{search_keyword}||'%' 
+     	 or  content like '%'||#{search_keyword}||'%' 
+     	 or  no like '%'||#{search_keyword}||'%' 
+     	</if>
+	</select>
+	<update id="update" parameterType="MessageVO">
+			update t_message
+		 	set readCheck='Y'
+			where no= #{no} and recipient=#{recipient}
+	</update>
+	<select id="readNcount" resultType="int">
+	    select  count(readCheck) from t_message
+  	 	where readCheck='N' and recipient=#{userid}
+	</select>
+	<select id="readYcount" resultType="int">
+	    select  count(readCheck) from t_message
+  	 	where   recipient=#{userid}
+	</select>
+	
+	<delete id="deletemsg" parameterType="hashmap">
+		delete from t_message
+		  where no in
+		<foreach collection="list"  item="no" open="(" close=")" separator=",">
+		 	#{no}
+	 	 </foreach>
+	</delete>
+	
+	<update id="msgUpdate" parameterType="MessageVO">
+	update t_message
+	set openDate=sysdate
+	where recipient=#{userid} and openDate is null
+	</update>
+	
+	<select id="readDate" resultType="int">
+	select count(*) from t_message
+ 	 where (openDate is null) and recipient=#{userid}
+	</select>
+	
+	<update id="pop" parameterType="String">
+		update t_message
+		set pop='Y'
+		where recipient=#{userid}
+	</update>
+	
+	<select id="value" resultType="int">
+		select count(*) 
+		from t_message
+		where recipient=#{userid} and pop='N'
+	</select>
+</mapper>
+
+
+

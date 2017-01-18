@@ -1,0 +1,37 @@
+@CHARSET "UTF-8";
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: 휴먼편지체, sans-serif;
+	font-size: 15pt;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover{
+	text-decoration: underline;
+	color:blue;
+}
+
+header {
+	margin: 1%;
+	margin-left: 5%;
+	margin-right: 5%;
+	height: 100px;
+	text-align: center;
+}
+
+section {
+	margin-left: 5%;
+	margin-right: 5%;
+	text-align: center;
+	margin-top: 10px;
+	padding: 10px;
+}
+
+
+
+

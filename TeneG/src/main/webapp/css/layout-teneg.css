@@ -1,0 +1,269 @@
+@CHARSET "UTF-8";
+
+  		*{
+         margin: 0px auto 0px auto;
+         border-color: #ddd;
+     	
+        }
+        a:link { color: red; text-decoration: none;}
+ 		a:visited { color: black; text-decoration: none;}
+ 		a:hover { color: black; text-decoration: underline;}
+ 		 .line{border-bottom:1px solid black;}
+ 			
+ 		tr th{
+ 				text-align: center;
+ 				height: 40px;
+ 			}
+ 			td{
+ 				height: 40px;
+ 			} 
+ 	
+            #mainbar{
+            	margin-top: 40xp;
+                width: 930px;
+           	    border-radius: 5px;
+          		
+           	  
+             }
+         
+	        #mainbar th,#mainbar td{
+	          	width: 100px;
+	          	height: 45px;
+	           	border: 1px solid #000;
+	           }
+	     
+     		#mainTable{ 
+     		margin-top:50px;
+            margin-bottom:150px; 
+            width: 930px;
+            height:200px;
+            border-radius: 5px;
+          
+            }
+     		#mainTable th,#mainTable td{
+     			border: 1px solid #bbb;
+     			
+     			
+     		}
+     
+     		#centersub{
+     			margin-top:10px;
+     		
+     			
+     		}
+     		#centersub_div{
+     			margin-top:30px;
+     			margin-left:280px;
+     			width:50px;
+     		
+     		}	
+     
+     	    #cs_center{
+                border-top:1px solid #000;
+                border-bottom: 1px solid #000;
+                margin-top: 0px;
+				width: 930px;
+				height: 150px; 
+				padding-top: 30px;
+	            }
+            #cs_float{
+               
+                float: left;
+            }
+            #sc_menu{
+                margin-left: 250px;
+     		 		width:410px;
+ 			 		height:100px;
+ 			 		min-width:410px;
+ 			 		min-height:100px;
+ 			 		position: absolute;
+                
+            }
+          #sc_menu li{
+                list-style: none;
+                border-bottom: 1px solid #ddd;
+                display: inline;
+                padding-right: 20px;
+                font-size: 13px;                
+                color:#bbb;
+              
+                
+            } 
+            #cs_center span{
+                color: #000;
+            }
+            
+            
+       /* ========================================================================================================= */
+	
+			
+			
+			#all{
+ 				border: 1px solid #bbb;
+ 				margin-top:130px;
+ 				margin-bottom:100px;
+ 				width: 1050px;
+ 				height: 1000px;
+ 				}
+ 			#qna_start{
+                margin-left: 50px;
+                margin-top: 20px;
+                width:500px;
+                height:120px;
+            	 }
+            	 
+            #array{
+ 				border:1px solid #000;
+ 				margin-top:30px;
+              	margin-bottom:100px;
+                width: 450px;
+                margin-left:5%;
+                height: 60px;
+                float: left;
+            }	 
+            
+                #left_table{
+                margin-top: 50px;
+                border: 2px solid #bbb;
+                width: 450px;
+                float: left;
+  				 }
+            
+              #left_table th , #left_table td{
+			    border-bottom: 1px solid #bbb;
+                height: 40px;       
+          		  }
+               	 #left_table th{
+ 				text-align: left;
+ 				vertical-align: middle;
+ 				}	
+  		      #left_table_div p{
+                padding-top: 17px;
+                padding-left:5px;
+                font-weight: bold;
+                font-size: 16px;
+                color:#000;
+            } 
+            #right_table{
+                width: 100px;           
+            }
+            #input_textarea{
+               color: #b2b2b2;
+               overflow-y: scroll;
+           }     
+       
+ 			.input_normal{
+ 				background-color: #fff;
+ 				border: 1px solid #ddd;
+ 				height: 20px;
+ 				padding-left: 10px;
+ 				
+ 			}
+       		 #ul_list{   
+                width: 150px;
+                height:300px;
+              
+            
+            
+            }
+            dd{
+                border-bottom:1px solid #bbb;
+   				  font-size: 16px;
+   				  width:300px;
+   				
+                
+            }
+            #ul_top{
+               margin-left: 35px;
+            
+            }
+ 			
+            #red_bar{
+            	width: 330px;
+            	height: 50px;
+            
+         		margin-right:175px;
+            	border: 2px solid red;
+            	float: right;
+            	color: red;
+            	padding-top: 10px; 
+            	padding-left: 15px; 
+            	
+            
+            }
+            #red_bar2{
+            	width: 330px;
+            	height: 79px;
+            	margin-top:400px;
+           		margin-right:175px;
+            	border: 2px solid red;
+            	color: #000;
+            	padding-top: 10px; 
+            	padding-left: 15px;
+            
+            }
+        
+        	    
+            #qna_button_b{
+     			margin-left:360px;
+     			margin-top:20px;
+                border: 1px solid #000;
+                width: 150px;
+                height: 50px;
+                display: inline-block;
+                background-color: black;
+                float: none;
+            }
+            #qna_button_w{
+                border: 1px solid #000;             
+                display: inline-block;
+                width: 150px;
+                height: 50px;
+           
+            }
+            #qna_button_b p, #qna_button_w p{
+                padding-top: 8px;
+                text-align: center;
+            }
+          
+          
+            #qna_button_b a:link { color: white; text-decoration: none;}
+            #qna_button_b a:visited { color: white; text-decoration: none;}
+            #qna_button_b a:hover { color: white; text-decoration: underline;}
+             .line{border-bottom:1px solid black;}
+             
+    /* ========================================================================================== */         
+    		#faq_table{
+    		margin-top: 5px;
+    		width: 625px;
+    		border: 1px solid #bbb;
+    	
+    		
+    		}
+    		#faq_table th, #faq_table td{
+    			border: 1px solid #bbb;
+    		} 
+    		#faq_table th{
+	    		padding-left: 5px;
+    		}
+    		#faq_table	input{
+ 				background-color: #fff;
+ 				border: 1px solid #ddd;
+ 				height: 25px;
+ 				
+    		}	
+    			
+    		#insert_button{
+                border: 1px solid #000;
+                width: 150px;
+                height: 50px;
+                background-color: black;
+                text-align: center;
+    			padding-top: 10px;
+    			margin-top: 30px;
+    			margin-bottom: 50px;
+            
+    		}	
+    		
+    	
+    

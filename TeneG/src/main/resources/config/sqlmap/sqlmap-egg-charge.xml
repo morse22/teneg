@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="kr.co.teneg.EggChargeDAO">
+	<insert id="eggCharge" parameterType="EggChargeVO">
+		 insert into t_egg_charge(no, id, amount, paymentOption )
+		 values(t_egg_charge_no.nextval, #{id}, #{amount}, #{paymentOption})
+	</insert>
+	<update id="eggAdd" parameterType="EggChargeVO">
+		update t_member set egg = egg + #{chargeEgg} where id = #{id}
+	</update>
+	<select id="eggChargeList" parameterType="String" resultType="EggChargeVO">
+		select no, id, amount, to_char(chargeDate, 'yyyy/mm/dd/hh24:mi') as chargeDate, paymentOption ,type
+		from t_egg_charge where id= #{id}
+	</select>
+	
+</mapper>

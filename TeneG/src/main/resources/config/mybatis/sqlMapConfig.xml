@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias type="kr.co.teneg.board.BoardVO" alias="boardVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.boardFile.BoardFileVO" alias="BoardFileVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.reply.ReplyVO" alias="ReplyVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.dbVO.BoardListVO" alias="BoardListVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.dbVO.BoardDetailVO" alias="BoardDetailVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.dbVO.BoardPageVO" alias="BoardPageVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.dbVO.RequestCountVO" alias="RequestCountVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.boardGood.BoardGoodVO" alias="BoardGoodVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.member.MemberVO" alias="MemberVO" />
+		<typeAlias type="kr.co.teneg.eggCharge.EggChargeVO" alias="EggChargeVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.request.RequestVO" alias="requestVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.faq.faqVO" alias="FaqVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.faq.qnaVO" alias="QnaVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.message.MessageVO" alias="MessageVO"></typeAlias>	
+		<typeAlias type="kr.co.teneg.select.SelectVO" alias="SelectVO"></typeAlias>		
+		<typeAlias type="kr.co.teneg.eggExchange.EggExchangeVO" alias="EggExchangeVO"></typeAlias>	
+		<typeAlias type="kr.co.teneg.expert.ExpertVO" alias="ExpertVO"></typeAlias>	
+		<typeAlias type="kr.co.teneg.review.ReviewVO" alias="ReviewVO"></typeAlias>	
+		<typeAlias type="kr.co.teneg.manager.image.ManagerImageVO" alias="ManagerImageVO"></typeAlias>	
+		<typeAlias type="kr.co.teneg.dbVO.MemberPageVO" alias="MemberPageVO"></typeAlias>		
+		<typeAlias type="kr.co.teneg.response.ResponseVO" alias="ResponseVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.requestWaiting.RequestWaitingVO" alias="RequestWaitingVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.dbVO.RequestMyWaitingVO" alias="RequestMyWaitingVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.dbVO.RequestQueryVO" alias="RequestQueryVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.dbVO.RequestdetailVO" alias="RequestdetailVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.dbVO.ResponseListVO" alias="ResponseListVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.dbVO.RequestListVO" alias="RequestListVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.auction.AuctionVO" alias="AuctionVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.dbVO.MyInfoVO" alias="MyInfoVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.refund.RefundVO" alias="RefundVO"></typeAlias>
+		<typeAlias type="kr.co.teneg.eggGift.EggGiftVO" alias="EggGiftVO"></typeAlias>
+		
+	</typeAliases>
+</configuration>

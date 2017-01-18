@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="kr.co.teneg.ReviewDAO">
+	
+	<insert id="insert" parameterType="ReviewVO">
+		insert into t_review(no, requestNo, content, writer, expertId, grade)
+			values(t_review_no.nextval, #{requestNo}, #{content}, #{writer}, #{expertId}, #{grade})
+	</insert>	
+	
+	<select id="selectById" parameterType="String" resultType="ReviewVO">
+		select content, writer, to_char(regDate) as regDate, grade from t_review where expertId=#{expertId}
+	</select>
+	
+</mapper>

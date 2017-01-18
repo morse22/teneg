@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.teneg.Select">
+	<insert id="select" parameterType="SelectVO">
+		insert into t_select (no, userid, expertid)
+	
+		values(seq_t_select_no.nextval, #{userid}, #{expertid})
+	</insert>
+	
+	<select id="list" resultType="SelectVO" parameterType="String" >
+	select * from(
+		  select distinct no, userid, expertid, e.field, e.content, e.titleImage
+  		  from t_member m, t_expert e, t_select s
+  		  where m.id=#{userid} and s.userid=#{userid}
+          and e.id=s.expertid
+          order by no desc)	       
+          <choose>
+		<when test="search_option != 'all'">					
+     	 where ${search_option} like '%'||#{search_keyword}||'%' 
+     	</when>
+     	<when test="search_option == 'all'">
+     	where  expertid like '%'||#{search_keyword}||'%' 
+     	 	or  field like '%'||#{search_keyword}||'%'        	
+     	</when>
+		</choose>    	   	  
+	</select>
+	
+	<select id="select_ajax" resultType="int">
+		select count(*) from t_select
+		where userid=#{userid} and expertid=#{expertid}
+	</select>
+	
+	<delete id="delete" parameterType="String">
+		delete from t_select
+		where expertid=#{id}
+	</delete>
+	
+	<select id="count" resultType="int" parameterType="String">
+		select count(*) from t_select
+		where userid=#{userid}
+	</select>
+</mapper>
+
+
+

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="kr.co.teneg.EggExchangeDAO">
+	<insert id="eggExchange" parameterType="EggExchangeVO">
+		insert into t_egg_exchange(no, id, amount)
+		 values (t_egg_exchange_no.nextval, #{id}, #{amount})
+	</insert>
+	<update id="eggSub" parameterType="EggChargeVO">
+		update t_member set egg = egg - #{exchangeEgg} where id = #{id}
+	</update>
+	<select id="eggExchangeList" parameterType="String" resultType="EggExchangeVO">
+		select  no, id, amount, to_char(exchangeDate, 'yyyy/mm/dd/hh24:mi') as exchangeDate, type
+		from t_egg_exchange where id=#{id}
+	</select>
+	<select id="myEgg" parameterType="String" resultType="int">
+		select egg from t_member where id = #{id}
+	</select>
+</mapper>  

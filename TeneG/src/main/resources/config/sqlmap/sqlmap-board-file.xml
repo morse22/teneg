@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="kr.co.teneg.BoardFileDAO">
+
+	<insert id="insert" parameterType="BoardFileVO">
+		insert into t_board_file(no, boardNo, saveFileName, oriFileName, fileSize)
+		 values(seq_t_board_file_no.nextval, #{boardNo}, #{saveFileName}, #{oriFileName}, #{fileSize})
+	</insert>
+	
+	<select id="selectByNo" parameterType="int" resultType="BoardFileVO">
+		select no, boardNo, saveFileName, oriFileName, fileSize from t_board_file where boardNo=#{no}
+	</select>
+	
+</mapper>

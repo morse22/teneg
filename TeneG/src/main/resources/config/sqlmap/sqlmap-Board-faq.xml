@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.teneg.QnABoard">
+	<select id="QnAList" parameterType="FaqVO" resultType="FaqVO">
+		select * from(select rownum as rnum, no, title, writer,content
+		from t_faq 
+		<choose>
+		<when test="search_option != 'all'">	
+					
+     	 where ${search_option} like '%'||#{search_keyword}||'%' 
+     			or  ${search_option} like '%'||#{search_keyword2}||'%' 
+     	  		or  ${search_option} like '%'||#{search_keyword3}||'%' 
+     	</when>
+     	<when test="search_option == 'all'">
+     	where  title like '%'||#{search_keyword}||'%' 
+     		or title like '%'||#{search_keyword2}||'%' 
+     		or title like '%'||#{search_keyword3}||'%' 
+     	 	or  content like '%'||#{search_keyword}||'%' 
+     	 	or  content like '%'||#{search_keyword2}||'%' 
+     	 	or  content like '%'||#{search_keyword3}||'%'       	
+     	</when>
+     	<when test="search_option == 'no' ">
+		where no like '%'||#{search_keyword}||'%'  
+				or no like '%'||#{search_keyword2}||'%'
+		  		or no like '%'||#{search_keyword3}||'%'
+		</when>
+		</choose>    	   	  	
+     	<if test="search_option_date == 'allNEW' ">order by no desc</if>
+     	<if test="search_option_date =='allOLD' ">order by no asc</if>
+     			)     	 
+	</select>
+		
+		
+<select id="QnAList_qna" parameterType="FaqVO" resultType="FaqVO">
+		select * from(select rownum as rnum, no, title, writer,content
+		from t_faq 
+		<choose>
+		<when test="search_option != 'all'">	
+					
+     	 where ${search_option} like '%'||#{search_keyword}||'%' 
+     			or  ${search_option} like '%'||#{search_keyword2}||'%' 
+     	  		or  ${search_option} like '%'||#{search_keyword3}||'%' 
+     	</when>
+     	<when test="search_option == 'all'">
+     	where  title like '%'||#{search_keyword}||'%' 
+     		or title like '%'||#{search_keyword2}||'%' 
+     		or title like '%'||#{search_keyword3}||'%' 
+     	 	or  content like '%'||#{search_keyword}||'%' 
+     	 	or  content like '%'||#{search_keyword2}||'%' 
+     	 	or  content like '%'||#{search_keyword3}||'%'       	
+     	</when>
+     	<when test="search_option == 'no' ">
+		where no like '%'||#{search_keyword}||'%'  
+				or no like '%'||#{search_keyword2}||'%'
+		  		or no like '%'||#{search_keyword3}||'%'
+		</when>
+		</choose>    	   	  	
+     	<if test="search_option_date == 'allNEW' ">order by no desc</if>
+     	<if test="search_option_date =='allOLD' ">order by no asc</if>
+     			)  where rnum between 1 and 5   	 
+	</select>	
+		
+		
+		
+		
+		
+		
+     <delete id="FaqDelete" parameterType="int">
+		delete from t_faq
+		where no= #{no}
+     </delete>	
+	
+	<insert id="boardFAQInsert" parameterType="FaqVO">
+		insert into t_faq(no, title , writer, content, pictureUrl)
+		values(seq_t_qna_no.nextval,#{title},#{writer},#{content},#{pictureUrl})
+	</insert>
+	
+	
+	<select id="FaqCount" resultType="int">
+			select count(*) from t_faq
+	<if test="search_option != 'all' ">
+      where ${search_option} like '%'||#{search_keyword}||'%'
+     </if>
+     	<if test="search_option == 'all' ">
+     	where title like '%'||#{search_keyword}||'%' 
+     	 or  content like '%'||#{search_keyword}||'%' 
+     	</if>
+	</select>
+	<select id="FaqDetail" parameterType="int" resultType="FaqVO">
+		select no, title , writer, content, pictureUrl,to_char(regDate, 'yyyy-mm-dd')as regDate
+		from t_faq
+		where no=#{no}
+	</select>
+	
+		
+	<update id="FaqUpdate">
+		update t_faq
+		 	set title=#{title}, content=#{content}
+			where no= #{no}
+	</update>
+<!-- ================================================================================================== -->	
+	<insert id="qnaInsert" parameterType="QnaVO">
+		insert into t_qna(no, productName ,title, writer, type, content)
+		values(seq_t_qna_no.nextval,#{productName},#{title},#{writer},#{type},#{content})
+	</insert>
+	
+	<select id="qnaList" parameterType="QnaVO" resultType="QnaVO">
+		select  no, title , writer, content, productName,to_char(regDate, 'yyyy-mm-dd')as regDate, type,answer,answerer
+		from t_qna
+		order by no desc
+	</select>
+
+	<select id="qnaDetail" parameterType="int" resultType="QnaVO">
+		select no, title , writer, content, to_char(regDate, 'yyyy-mm-dd')as regDate, answer, answerer
+		from t_qna
+		where no=#{no}
+	</select>
+	
+	<update id="qnaRefInsert">
+		update t_qna
+		set answer = #{answer}, answerer=#{answerer}
+		where no = #{no} 
+	</update>
+	
+</mapper>

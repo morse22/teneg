@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="kr.co.teneg.ReplyDAO">
+
+	<sql id="select">
+		select no, boardNo, writer, content, groupNo, parentId, 
+		case when to_char(regDate) = to_char(sysdate) then to_char(regDate, 'HH24:MI')
+		else to_char(regDate, 'YY.mm.DD')
+		end as regDate
+		from t_board_reply
+	</sql> 
+	
+	<insert id="insert" parameterType="ReplyVO">
+		insert into t_board_reply(no, boardNo, writer, content, groupNo)
+		 values(seq_t_board_reply_no.nextval, #{boardNo}, #{writer}, #{content}, seq_t_board_reply_groupNo.nextval)
+	</insert>
+	
+	<insert id="insertRR" parameterType="ReplyVO">
+		insert into t_board_reply(no, boardNo, writer, content, groupNo, parentId)
+		 values(seq_t_board_reply_no.nextval, #{boardNo}, #{writer}, #{content}, #{groupNo}, #{parentId})
+	</insert>
+	
+	<select id="selectByNo" parameterType="int" resultType="ReplyVO">
+		<include refid="select"></include>
+		 where boardNo=#{no} order by groupNo desc, parentId nulls first, no desc
+	</select>
+	
+	<delete id="delete" parameterType="int">
+		delete from t_board_reply where no=#{no}
+	</delete>
+	
+</mapper>

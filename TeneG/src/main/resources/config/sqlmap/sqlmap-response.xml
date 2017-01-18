@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.teneg.ResponseDAO">
+
+	<select id="getNextNo2" resultType="int">
+		select
+		seq_t_response_no.nextval from dual
+	</select>
+
+	<insert id="response" parameterType="RequestVO">
+		insert into t_response(no, requestNo, expertId)
+		values(#{no}, #{requestNo}, #{expertId})
+	</insert>
+
+	<select id="selectAll" parameterType="String" resultType="ResponseListVO">
+	select a.no, requestNo, expertId, status, to_char(completeDate) as completeDate , to_char(regDate) as regDate, readCheck, progress from 
+		(select no, requestNo, expertId, status, to_char(completeDate) as completeDate
+		, to_char(regDate) as regDate, readCheck from t_response where expertId=#{id}) a
+    left outer join
+    (select no, progress from t_request) b on a.requestNo=b.no
+	</select>
+	
+    <update id="read">
+		update t_response set readCheck='Y'
+	</update>
+	
+	<select id="readNcount"  parameterType="String" resultType="int">		
+		select count(readCheck) from t_response where readCheck='N' and expertId=#{id}
+   </select>
+   
+   <update id="doComplete" parameterType="RequestVO">
+   		update t_response set status='S', completeDate=sysdate, saveFileName=#{saveFileName} where requestNo=#{no}
+   </update>
+   
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.teneg.RequestWaitingDAO">
+
+	<insert id="insert" parameterType="requestWaitingVO">
+		insert into t_request_waiting(requestNo, expertId) values (#{requestNo}, #{expertId})
+	</insert>
+
+	<select id="select" parameterType="requestWaitingVO" resultType="requestWaitingVO">
+		select requestNo, expertId, to_char(regDate, 'YY/MM/DD HH24:MI:SS') as
+		regDate from t_request_waiting where requestNo=#{requestNo} and
+		expertId=#{expertId}
+	</select>
+
+	<select id="countByRequestNo" parameterType="int" resultType="int">
+		select count(*) from t_request_waiting where requestNo=#{requestNo}
+	</select>
+
+	<select id="selectExpert" parameterType="String" resultType="RequestMyWaitingVO">
+		select a.id, a.title, a.price, a.regdate, b.expertId as expertId, a.no as requestNo
+		from t_request a
+		left outer join t_request_waiting b
+		on a.no = b.requestNo
+		where a.id=#{id}
+		order by a.no
+	</select>
+	
+	<select id="readNcount"  parameterType="String" resultType="int">
+	select count(b.readCheck)as expertId
+		from t_request a
+		left outer join t_request_waiting b
+		on a.no = b.requestno
+		where a.id=#{id} and readCheck='N'
+		order by a.no
+		
+   </select>
+   
+   <select id="selectByNo" resultType="requestWaitingVO" parameterType="int">
+   		select requestNo, expertId, to_char(regDate, 'YY/MM/DD HH24:MI:SS') as
+		regDate from t_request_waiting where requestNo=#{no}
+   </select>
+   
+   <update id="read">
+		update t_request_waiting set readCheck='Y'
+	</update>
+	
+	<delete id="waitingDelete" parameterType="int">
+		delete t_request_waiting where requestNo=#{requestNo}
+	</delete>
+	
+	
+
+</mapper>

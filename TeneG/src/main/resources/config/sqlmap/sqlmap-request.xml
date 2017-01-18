@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="kr.co.teneg.RequestDAO">
+
+	<sql id="selectId">
+		select no, id, title, field, content, deadline, status, progress, price, premium, saveFileName,
+		 to_char(regDate, 'yyyy-mm-dd') as regDate, to_char(deadline, 'yyyy-mm-dd') as deadline 
+		from t_request
+	</sql>
+
+	<select id="selectAll" resultType="RequestVO" parameterType="RequestVO">
+		<include refid="selectId"/> 
+			<choose>
+       		<when test="field == 'all'">
+       			  <choose>
+		       		<when test="status == 'all'">
+		       		</when>
+					<otherwise>
+						where status=#{status}	
+					</otherwise>
+		       	  </choose>	
+       		</when>
+			<otherwise>
+				where field=#{field}
+				  <choose>
+		       		<when test="status == 'all'">
+		       		</when>
+					<otherwise>
+						and status=#{status}		
+					</otherwise>
+		       	  </choose>	
+			</otherwise>
+       	  </choose>	
+       	  order by no desc 
+	</select>
+	
+	<insert id="auctionInsert" parameterType="RequestVO">
+	 insert into t_request(no, id, title, field, content, deadline, price, premium, status)
+	  values(#{no}, #{id}, #{title}, #{field}, #{content}, #{deadline}, #{price}, #{premium}, #{status})
+	</insert>
+	
+	<select id="selectDD" parameterType="BoardPageVO" resultType="RequestListVO">	
+	 select rnum, no, id, title, field, content, status, progress, price, premium, saveFileName, regDate, deadline, isRequested from
+	 ( select rownum as rnum, no, id, title, field, content, status, progress, price, premium, saveFileName, regDate, deadline, isRequested from
+	 (select no, id, title, field, content, status, progress, price, premium, saveFileName, regDate, deadline, requestNo as isRequested from
+			(select no, id, title, field, content, status, progress, price, premium, saveFileName,
+			 to_char(regDate, 'yyyy-mm-dd') as regDate, to_char(deadline, 'yyyy-mm-dd') as deadline 
+			from t_request where status='D'
+			  <choose>
+	       		<when test="searchType == 'all'">
+	       		</when>
+				<otherwise>
+					and field=#{searchType}
+				</otherwise>
+	       	  </choose>
+			) a
+	    left outer join 
+	    (select requestNo from t_request_waiting where expertId=#{id}
+		) b on a.no=b.requestNo order by no desc ))
+	    where rnum between #{start} and #{end}
+	</select>
+	
+	<select id="selectDP" resultType="RequestVO">
+		<include refid="selectId"/> where (status='D' or status='AUC') and premium='Y' order by no desc
+	</select>
+	
+	<select id="selectAUC" resultType="RequestVO">
+		<include refid="selectId"/> where status='AUC' and id=#{id} order by no desc
+	</select>
+
+	<select id="manageAll" parameterType="String" resultType="RequestVO">
+		<include refid="selectId"/> where id=#{id}
+	</select>
+	
+	<select id="selectDetail" parameterType="int" resultType="RequestVO">
+		select no, id, title, field, content, field, content, to_char(deadline, 'YYYY/MM/DD/') as deadline,  saveFileName, status, progress, price, premium,  to_char(regDate, 'yyyy/mm/dd') as regDate
+		 from t_request where no=#{no}
+	</select>
+	
+	<select id="selectRequestDetail" parameterType="RequestQueryVO" resultType="RequestdetailVO">
+		 select DISTINCT a.no, a.id, a.title, a.field, a.content, a.field, a.content, to_char(deadline, 'YYYY/MM/DD/') as deadline, a.saveFileName, 
+    a.status, a.progress, a.price, a.premium, 
+    to_char(a.regDate, 'yyyy/mm/dd') as regDate, 
+    b.id as expertId, b.field as expertField from t_request a
+		 left outer join t_expert b
+     on b.id=#{expertId}
+      where no=#{requestNo}
+	</select>
+	
+	<select id="getNextNo" resultType="int">
+		select seq_t_request_no.nextval from dual
+	</select>
+
+	<insert id="insert" parameterType="RequestVO">
+		insert into t_request(no, id, title, field, content, deadline, price, premium, saveFileName)
+		 values(#{no}, #{id}, #{title}, #{field}, #{content}, #{deadline}, #{price}, #{premium}, #{saveFileName})
+	</insert>
+	
+	<delete id="delete" parameterType="int">
+		delete t_request where no=#{no}
+	</delete>
+	
+	<update id="update" parameterType="RequestVO">
+		update t_request set title=#{title}, field=#{field}, content=#{content}, deadline=#{deadline}, price=#{price}, premium=#{premium} where no=#{no}
+	</update>
+	
+	<update id="progress" parameterType="int">
+		update t_request set status='P' where no=#{requestNo}
+	</update>
+	
+	<select id="readNcount"  parameterType="String" resultType="int">
+	select count(a.readCheck)as expertId
+		from t_request_message a
+		left outer join t_request b
+		on a.requestNo = b.no
+		where a.expertId=#{id} and a.readCheck='N'
+   </select>
+   
+   
+   <update id="read">
+		update t_request_message set readCheck='Y' where expertId=#{id}
+   </update>
+   
+   <insert id="insertmessage" parameterType="RequestVO">
+		insert into t_request_message (requestNo, expertId)
+ select a.no as requestNo, b.ID as expertId
+		from t_request a
+		FULL outer join t_expert b
+		on a.field = b.field
+		where a.field=#{field} and a.no=#{no}
+		order by a.no
+	</insert>
+	
+	<select id="newList" parameterType="RequestVO" resultType="RequestVO">
+		select a.no, a.id, a.title, a.field, a.content, a.deadline, a.status, a.progress, a.price, a.premium,
+		 to_char(regDate, 'yyyy-mm-dd') as regDate, to_char(deadline, 'yyyy-mm-dd') as deadline 
+		from t_request a
+    inner join t_request_message b
+    on a.no = b.REQUESTNO  
+    where expertId=#{id}
+	</select>
+   
+   
+   <select id="selectByText" resultType="RequestVO" parameterType="String">
+		select no, id, title, field, content, field, content, to_char(deadline, 'YYYY/MM/DD/') as deadline,  status, progress, price, premium,  to_char(regDate, 'yyyy/mm/dd') as regDate
+		 from t_request where title like #{searchText}
+	</select>
+	
+	<select id="selectD" resultType="RequestVO" parameterType="String">
+		select no, id, title, field, content, field, content, to_char(deadline, 'YYYY/MM/DD/') as deadline,  status, progress, price, premium,  to_char(regDate, 'yyyy/mm/dd') as regDate
+		 from t_request where id=#{id} and status='D'
+	</select>
+	
+	<select id="selectP" resultType="RequestListVO" parameterType="String">
+	select no, id, title, field, content, price, deadline,  status, progress, price, premium, regDate, expertId, saveFileName from
+    (select no, id, title, field, content, to_char(deadline, 'YYYY/MM/DD/') as deadline,  status, progress, price, premium,  to_char(regDate, 'yyyy/mm/dd') as regDate
+		 from t_request where id=#{id} and (status='P' or status='DC' or status='RP')) a
+    left outer join
+    (select requestNo, expertId, saveFileName from t_response) b on a.no=b.requestNo
+	</select>
+	
+	<select id="selectC" resultType="RequestListVO" parameterType="String">
+	select no, id, title, field, content, price, deadline,  status, progress, price, premium, regDate, expertId from
+    (select no, id, title, field, content, to_char(deadline, 'YYYY/MM/DD/') as deadline,  status, progress, price, premium,  to_char(regDate, 'yyyy/mm/dd') as regDate
+		 from t_request where id=#{id} and (status='C' or status='RC' or status='RR')) a
+    left outer join
+    (select requestNo, expertId from t_response) b on a.no=b.requestNo
+	</select>
+	
+	<select id="getTypeCount" resultType="RequestCountVO">
+		select dCount, pCount, cCount, mCount from 
+		(select count(*) as dCount from t_request where status='D' and id=#{id}) d, 
+		(select count(*) as pCount from t_request where (status='P' or status='DC' or status='RP') and id=#{id}) p, 
+		(select count(*) as cCount from t_request where (status='C' or status='RC' or status='RR') and id=#{id}) c, 
+		(select count(*) as mCount from t_request where status='AUC' and id=#{id}) m
+	</select>
+	
+	<update id="doComplte" parameterType="int">
+		update t_request set status='C' where no=#{requestNo}
+	</update>
+	
+	<update id="doDComplte" parameterType="int">
+		update t_request set status='DC', progress=100 where no=#{requestNo}
+	</update>
+	
+	<update id="setProgress" parameterType="RequestVO">
+		update t_request set progress=#{progress} where no=#{no}
+	</update>
+	
+	<update id="doRP" parameterType="int">
+		update t_request set status='RP' where no=#{requestNo}
+	</update>
+	
+	<update id="doRR" parameterType="int">
+		update t_request set status='RR' where no=#{requestNo}
+	</update>
+	
+	<update id="updateAuctionFinish" parameterType="hashmap">
+		update t_request set status='P',price=#{finalPrice} where no=#{requestNo}
+	</update>
+	
+</mapper>

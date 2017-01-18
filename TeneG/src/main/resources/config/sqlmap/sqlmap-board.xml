@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="kr.co.teneg.BoardDAO">
+
+	<sql id="selectId">
+		select no, title, content, writer, hit, good, type, category,
+		case when to_char(regDate) = to_char(sysdate) then to_char(regDate, 'HH24:MI')
+		else to_char(regDate, 'YY.mm.DD')
+		end as regDate
+		from t_board 
+	</sql>
+	
+	<select id="selectNotiInfo" resultType="BoardListVO">
+		(select board_data.*, t_board_good.goodCount as goodCount from 
+		(select t_board.*, reCount.replyCount from 
+		(select no, title, content, writer, hit, good, type, category,
+			case when to_char(regDate) = to_char(sysdate) then to_char(regDate, 'HH24:MI')
+			else to_char(regDate, 'YY.mm.DD')
+			end as regDate
+			from t_board) t_board  left outer join (select boardNo, count(*) as replyCount from t_board_reply group by boardNo ) reCount  on t_board.no=reCount.boardNo) board_data
+        	left outer join (select boardNo, count(*) as goodCount from t_board_good group by boardNo) t_board_good on board_data.no=t_board_good.boardNo where type='info' or type='noti')
+       		order by
+      	decode(type, 'info', type),
+       	decode(type, 'noti', type), no desc
+	</select>
+	
+	<select id="selectNormalList" resultType="BoardListVO" parameterType="BoardPageVO">
+		  select no, title, content, writer, hit, good, type, category, regDate, replyCount, goodCount from
+		  (select rownum as rnum, no, title, content, writer, hit, good, type, category, regDate, replyCount, goodCount from
+	  	  (select no, title, content, writer, hit, good, type, category, regDate, replyCount, goodCount from
+	      (select board_data.*, t_board_good.goodCount as goodCount from
+		 		(select t_board.*, reCount.replyCount from 
+				(select no, title, content, writer, hit, good, type, category,
+						case when to_char(regDate) = to_char(sysdate) then to_char(regDate, 'HH24:MI')
+						else to_char(regDate, 'YY.mm.DD')
+						end as regDate
+						from t_board where					
+				          <choose>
+				       		<when test="searchType == 'content'">
+				       			content like #{searchText}
+				       		</when>
+				       		<when test="searchType == 'writer'">
+								writer like #{searchText}
+				       		</when>
+				       		<when test="searchType == 'title'">
+								title like #{searchText}
+				       		</when>
+				       		<when test="searchType == 'no'">
+								no=#{searchText}
+				       		</when>
+				       	  </choose>	
+				       	  		
+						  <choose>
+				       		<when test="period == 'all'">
+				       				
+				       		</when>
+				       		<when test="period == 'today'">
+				       			<![CDATA[
+					       			and to_char(regDate)=to_char(sysdate)
+					       		]]>
+				       		</when>
+				       		<when test="period == 'week'">
+				       			<![CDATA[
+					       			and regDate > sysdate-7
+					       		]]>
+				       		</when>
+				       		<otherwise>
+				       			<![CDATA[
+					       			and regDate > sysdate-30
+					       		]]>
+				       		</otherwise>
+				       	   </choose>			       	  
+						) t_board  
+          left outer join (select boardNo, count(*) as replyCount from t_board_reply group by boardNo ) reCount on t_board.no=reCount.boardNo) board_data
+          left outer join (select boardNo, count(*) as goodCount from t_board_good group by boardNo) t_board_good on board_data.no=t_board_good.boardNo 
+          where type!='info' and type!='noti')   
+          order by 
+          <choose>
+       		<when test="sort == 'no'">
+       			no desc
+       		</when>
+       		<when test="sort == 'hit'">
+       			hit desc
+       		</when>
+       		<otherwise>
+       			goodCount desc nulls last
+       		</otherwise>
+       	  </choose>
+          ))
+          where rnum between #{start} and #{end}        
+	</select>
+	
+	<select id="selectDetail" parameterType="int" resultType="BoardDetailVO">
+		select * from(
+			select no, title, content, writer, to_char(regDate, 'YYYY/MM/DD/ HH24:MI:SS') as regDate, hit, good, type, category
+			, lag(no) over( order by decode(type, 'info', type), decode(type, 'noti', type), no desc) as preNo
+			, lead(no) over (order by decode(type, 'info', type), decode(type, 'noti', type), no desc) as nextNo
+			, lag(title) over (order by decode(type, 'info', type), decode(type, 'noti', type), no desc) as preTitle
+			, lead(title) over (order by decode(type, 'info', type), decode(type, 'noti', type), no desc) as nextTitle
+		 from t_board) where no=#{no}
+	</select>
+	
+	<select id="getNextNo" resultType="int">
+		select seq_t_board_no.nextval from dual
+	</select>
+	
+	<select id="selectTotalCount" resultType="int">
+		select count(*) from t_board where type!='noti' and type!='info' 
+	</select>
+	
+	<insert id="insert" parameterType="BoardVO">
+		insert into t_board(no, title, writer, content, type, category)
+		 values(#{no}, #{title}, #{writer}, #{content}, #{type}, #{category})
+	</insert>
+	
+	<delete id="delete" parameterType="int">
+		delete t_board where no=#{no}
+	</delete>
+	
+	<update id="update" parameterType="BoardVO">
+		update t_board set title=#{title}, content=#{content}, type=#{type}, category=#{category} where no=#{no}
+	</update>
+	
+	<update id="incrementHit" parameterType="int">
+		update t_board set hit=hit+1 where no=#{no}
+	</update>
+	
+	<delete id="deleteList" parameterType="java.util.List">
+		delete from t_board where no in <foreach collection="list" item="num" open="(" separator="," close=")">#{num}</foreach>
+	</delete>
+	
+	<select id="newBoardCount" resultType="int">
+		select count(*) from t_board where to_char(sysdate)=to_char(regDate) and type!='info' and type!='noti'
+	</select>
+	
+</mapper>

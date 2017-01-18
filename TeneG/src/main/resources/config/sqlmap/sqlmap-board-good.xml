@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="kr.co.teneg.BoardGoodDAO">
+	
+		<insert id="insert" parameterType="boardGoodVO">
+			insert into t_board_good(boardNo, id) values (#{boardNo}, #{id})
+		</insert>
+		
+		<select id="select" parameterType="boardGoodVO" resultType="boardGoodVO">
+			select boardNo, id, to_char(regDate, 'YY/MM/DD HH24:MI:SS') as regDate from t_board_good where boardNo=#{boardNo} and id=#{id}
+		</select>
+		
+		<select id="countByBoardNo" parameterType="int" resultType="int">
+			select count(*) from t_board_good where boardNo=#{boardNo}
+		</select>
+		
+</mapper>

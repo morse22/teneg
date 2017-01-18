@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="kr.co.teneg.AuctionDAO">
+	<insert id="join" parameterType="AuctionVO">
+		 insert into t_auction(no, id, requestNo, price )
+		  values(t_auction_no.nextval, #{id}, #{requestNo}, #{price})
+	</insert>
+	
+	<insert id="initInsert" parameterType="AuctionVO">
+		 insert into t_auction(no, id, requestNo, price, type )
+		  values(t_auction_no.nextval, #{id}, #{requestNo}, #{price}, #{type})
+	</insert>
+	
+	<select id="joinList" parameterType="int" resultType="AuctionVO">
+		select no, id, requestNo, price, case when to_char(auctionDate) = to_char(sysdate) then to_char(auctionDate, 'HH24:MI')
+						else to_char(auctionDate, 'YY-mm-DD')
+						end as auctionDate, type
+		from t_auction where requestNo=#{requestNo} and type='stanby' order by price
+	</select>
+	
+	<select id="selectByNo" parameterType="hashmap" resultType="AuctionVO">
+      select no, id, requestNo, price, auctionDate from(
+    	select rownum as rnum, no, id, requestNo, price, auctionDate from
+   		(select no, id, requestNo, price, case when to_char(auctionDate) = to_char(sysdate) then to_char(auctionDate, 'HH24:MI')
+						else to_char(auctionDate, 'YY-mm-DD')
+						end as auctionDate, type
+		from t_auction where requestNo=#{requestNo} and type='stanby' order by price))
+    where rnum between #{start} and 100000000
+	</select>
+	
+	<update id="choice" parameterType="int">
+		update t_auction set type='selected' where no = #{no}
+	</update>
+	
+	<delete id="choiceCancel" parameterType="AuctionVO">
+		delete t_auction where requestNo = #{requestNo} and 
+		 <![CDATA[ to_char(auctionDate, 'yyyy-mm-dd hh24:mi') < #{auctionDate}	]]>
+	</delete>
+	
+	<select id="selectedJoin" parameterType="int" resultType="AuctionVO">
+		select no, id, requestNo, price, case when to_char(auctionDate) = to_char(sysdate) then to_char(auctionDate, 'HH24:MI')
+						else to_char(auctionDate, 'YY-mm-DD')
+						end as auctionDate, type
+		from t_auction where requestNo=#{requestNo} and type='selected'
+	</select>
+	
+	<delete id="deleteNotNo" parameterType="int">
+		delete t_auction where requestNo=#{requestNo} and no!=#{no}
+	</delete>
+	
+	<delete id="deleteAllByRequestNo" parameterType="int">
+		delete t_auction where requestNo=#{requestNo}
+	</delete>
+	
+</mapper>
